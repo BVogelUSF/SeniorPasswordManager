@@ -174,6 +174,6 @@ password = "wrong"
 website = "Nope"
 name = "JohnDoe"
 genPassword = "qwerty"
-print(login(cursor,username,password))
+account = login(cursor,username,password))
 # insert(cursor,username,password,genPassword,website,name,account)
-# print(query(cursor,username,password,website,name,account))
+# print(query(cursor,username,password,website,name,str(account)))
