@@ -8,8 +8,7 @@ import pyodbc
 def query(cursor, login, password, website, username, account):
     # Process to first open the User's unique encryption key. No errors should occur as this is verified
     # through login. Second task begins at UPDATE, User's data is decrypted for querying.
-    cursor.execute(""
-                   "OPEN SYMMETRIC KEY " + login + "Key "
+    cursor.execute("OPEN SYMMETRIC KEY " + login + "Key "
                    "DECRYPTION BY CERTIFICATE " + login + "Certificate "
                    "WITH PASSWORD = '" + password + "';"
                    "UPDATE UserPasswords\n"
@@ -36,7 +35,7 @@ def query(cursor, login, password, website, username, account):
                        "SET Pass = ENCRYPTBYKEY(Key_GUID('" + login + "Key'),Pass),"
                        "Username = ENCRYPTBYKEY(Key_GUID('" + login + "Key'),Username),"
                        "Website = ENCRYPTBYKEY(Key_GUID('" + login + "Key'),Website)"
-                       "WHERE Username = '" + username + "';")
+                       "WHERE UserID = '" + account + "';")
         conn.commit()
         cursor.execute("CLOSE SYMMETRIC KEY " + login + "Key")
         conn.commit()
@@ -95,7 +94,7 @@ def createAccount(cursor,login,password):
         if len(password) < 9:
             output = "Password isn't long enough"
         elif len(password) > 255:
-            output = "Password is to long"
+            output = "Password is too long"
         else:
             output = "Password isn't complex enough, requires at leas 1 Uppercase letter1 complex character and 1" \
                      " lowercase letter"
@@ -166,14 +165,60 @@ conn = pyodbc.connect(''
                       ';PWD=' + password)
 
 cursor = conn.cursor()
-#
-username = "finaltest"
+# username = "finaltest"
 # password = "passwordTest!!"
-password = "wrong"
-# print(createAccount(cursor,username,password))
-website = "Nope"
-name = "JohnDoe"
-genPassword = "qwerty"
-account = login(cursor,username,password))
+# website = "www.Windows.com"
+# name = "CadePrice"
+# genPassword = "totallydifferentpassword"
+# account = login(cursor,username,password)
+# print(account)
 # insert(cursor,username,password,genPassword,website,name,account)
+# long = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+#        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+#        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+# print(len(long))
+# print(createAccount(cursor,username,long))
+
+
 # print(query(cursor,username,password,website,name,str(account)))
+# password = "wrong"
+
+
+
+
+
+
+# Test code begins here:
+
+# user inputs for their login and password
+logName = "finaltest"
+logPass = "passwordTest!!"
+
+# Login function runs, verifies the login information
+# returns userID which is their id in the database
+userID = login(cursor,logName,logPass)
+userID = str(userID)
+# if you want to verify the database functions for you
+# run the print and comment out everything below it
+# print(userID)
+
+# user input
+username1 = "Vogel1"
+website1 = "www.test.com"
+pass1 = "testtesttest"
+
+# inserts the data into the database then encrypts it
+insert(cursor,logName,logPass,pass1,website1,username1,userID)
+
+# data sent to function, returns as string
+queryReturn1 = query(cursor,logName,logPass,website1,username1,userID)
+print(queryReturn1)
+
+# same as above, but new inputs
+username1 = "Vogel2"
+website1 = "www.gmail.com"
+pass1 = "thisisntsecure"
+
+insert(cursor,logName,logPass,pass1,website1,username1,userID)
+queryReturn1 = query(cursor,logName,logPass,website1,username1,userID)
+print(queryReturn1)
